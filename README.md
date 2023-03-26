@@ -83,7 +83,6 @@ import UserController from '../controller/user.controller';
 
 const router = express.Router();
 const userController = new UserController();
-const paramValidation = userController.paramValidation();
 
 router
     .route('/users')

@@ -56,7 +56,7 @@ module.exports = class UserService extends ApiRestService {
     constructor() {
         super(User);
     }
-
+}
 ```
 
 - #### Controller layer

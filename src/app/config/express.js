@@ -38,8 +38,6 @@ if (config.env === config.environments.development) {
     }));
 }
 
-app.use('/manage', manageRoutes);
-
 app.use((err, req, res, next) => {
     if (!(err instanceof ApiError)) {
         winstonInstance.error(err);
@@ -94,5 +92,7 @@ app.use(( err, req, res, next, ) => {
         });
     } 
 });
+
+app.use('/manage', manageRoutes);
 
 export default app;

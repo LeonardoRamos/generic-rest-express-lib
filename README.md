@@ -21,7 +21,7 @@ Import the dependency on your project. POC example https://github.com/LeonardoRa
 
 ```javascript
 import Sequelize from 'sequelize';
-import BaseEntity from './core/base.entity';
+import { BaseEntity } from 'generic-rest-express-lib';
 
 class UserDefinition extends BaseEntity { 
     .
@@ -46,7 +46,7 @@ module.exports = (sequelize) => {
 - #### Service layer
 
 ```javascript
-import ApiRestService from './core/api.rest.service';
+import { ApiRestService } from 'generic-rest-express-lib';
 import db from '../config/sequelize';
 
 const User = db.User;
@@ -62,7 +62,7 @@ module.exports = class UserService extends ApiRestService {
 - #### Controller layer
 
 ```javascript
-import ApiRestController from './core/api.rest.controller';
+import { ApiRestController } from 'generic-rest-express-lib';
 import UserService from '../service/user.service';
 
 const userService = new UserService();

@@ -1,6 +1,6 @@
 {
     "name": "generic-rest-express-lib",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "description": "GenericRestExpressLib",
     "author": "Leonardo Ramos <leoslramos@gmail.com>",
     "private": false,
@@ -9,15 +9,10 @@
         "npm": ">=2.15.11",
         "yarn": ">=0.20.3"
     },
+    "type": "module",
+    "main": "index.js",
     "scripts": {
-        "start": "gulp server",
-        "start:debug": "cross-env DEBUG=generic-rest-express-lib:* yarn start",
-        "build": "gulp",
-        "lint": "esw *.js server config --color",
-        "lint:watch": "yarn lint -- --watch",
-        "beautify": "es-beautifier -u -c .eslintrc.js *.js server config",
-        "test": "gulp mocha",
-        "test:watch": "yarn test -- --watch"
+        "start": "node index.js"
     },
     "repository": {
         "type": "git",

@@ -1,6 +1,6 @@
 {
     "name": "generic-rest-express-lib",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "GenericRestExpressLib",
     "author": "Leonardo Ramos <leoslramos@gmail.com>",
     "private": false,
@@ -10,7 +10,7 @@
         "yarn": ">=0.20.3"
     },
     "type": "module",
-    "main": "index.js",
+    "main": "src/app/index.js",
     "scripts": {
         "start": "node index.js"
     },

@@ -30,6 +30,7 @@ app.use(cors());
 if (config.env === config.environments.development) {
     expressWinston.requestWhitelist.push('body');
     expressWinston.responseWhitelist.push('body');
+    
     app.use(expressWinston.logger({
         winstonInstance,
         meta: true,
@@ -39,7 +40,6 @@ if (config.env === config.environments.development) {
 }
 
 app.setupApp = (appPackage) => {
-
     app.use('/manage', manageRoutes.setupManageRoutes(appPackage));
 
     app.use((err, req, res, next) => {

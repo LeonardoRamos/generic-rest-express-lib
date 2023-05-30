@@ -200,6 +200,7 @@ function getComparisonOperator(logicExpression, index) {
 
 function processNewExpressionNode(currentExpression) {
     if (currentExpression.logicOperator !== null) {
+        
         currentExpression.filterExpression = {};
         currentExpression = currentExpression.filterExpression;
     }

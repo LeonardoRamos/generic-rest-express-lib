@@ -1,6 +1,6 @@
 {
     "name": "generic-rest-express-lib",
-    "version": "1.0.3",
+    "version": "1.0.0",
     "description": "GenericRestExpressLib",
     "author": "Leonardo Ramos <leoslramos@gmail.com>",
     "private": false,

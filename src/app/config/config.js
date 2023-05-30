@@ -1,9 +1,10 @@
-import Joi from '@hapi/joi';
+const Joi = require('@hapi/joi');
+const dotenv = require('dotenv');
 
-require('dotenv').config();
+dotenv.config();
 
-const environments = [ 'development', 'production', 'test', 'provision' ]
-    .reduce((configEnvs, env, index, envs) => ({ ...configEnvs, ...{ [envs[index]]: env} }), {});
+const environments = ['development', 'production', 'test', 'provision']
+    .reduce((configEnvs, env, index, envs) => ({ ...configEnvs, ...{ [envs[index]]: env } }), {});
 
 const envVarsSchema = Joi.object({
     NODE_ENV: Joi.any()
@@ -17,19 +18,23 @@ const envVarsSchema = Joi.object({
         .description('JWT Secret required to sign')
         .default('6cfaef779158723ca4998ec416d18eb8'),
 
-    PG_DB: Joi.string()
-        .description('Postgres database name')
+    DB_DATABASE: Joi.string()
+        .description('Database name')
         .default('TestNode'),
 
-    PG_PORT: Joi.number().default(5432),
-    PG_HOST: Joi.string().default('localhost'),
-    PG_USER: Joi.string()
-        .description('Postgres username')
+    DB_DIALECT: Joi.string()
+        .description('Database dialect')
         .default('postgres'),
 
-    PG_PASSWORD: Joi.string()
+    DB_PORT: Joi.number().default(5432),
+    DB_HOST: Joi.string().default('localhost'),
+    DB_USER: Joi.string()
+        .description('Database username')
+        .default('postgres'),
+
+    DB_PASSWORD: Joi.string()
         .allow('')
-        .description('Postgres password')
+        .description('Database password')
         .default('postgres')
         .optional(),
 
@@ -51,20 +56,21 @@ if (error) {
 }
 
 const config = {
-    environments, 
+    environments,
     env: envVars.NODE_ENV,
     port: envVars.PORT,
     jwtSecret: envVars.JWT_SECRET,
     jwtExpiration: envVars.JWT_EXPIRATION,
     logFile: envVars.LOG_FILE,
     scanModelPath: envVars.SCAN_MODEL_PATH,
-    postgres: {
-        db: envVars.PG_DB,
-        port: envVars.PG_PORT,
-        host: envVars.PG_HOST,
-        user: envVars.PG_USER,
-        password: envVars.PG_PASSWORD,
+    database: {
+        db: envVars.DB_DATABASE,
+        dialect: envVars.DB_DIALECT,
+        port: envVars.DB_PORT,
+        host: envVars.DB_HOST,
+        user: envVars.DB_USER,
+        password: envVars.DB_PASSWORD,
     },
 };
 
-export default config;
+module.exports = config;

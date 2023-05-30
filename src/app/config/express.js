@@ -1,17 +1,17 @@
-import express from 'express';
-import logger from 'morgan';
-import cookieParser from 'cookie-parser';
-import compress from 'compression';
-import methodOverride from 'method-override';
-import cors from 'cors';
-import httpStatus from 'http-status';
-import expressWinston from 'express-winston';
-import expressValidation from 'express-validation';
-import helmet from 'helmet';
-import winstonInstance from './winston';
-import manageRoutes from '../route/base/manage.route';
-import config from './config';
-import ApiError from '../error/api.error';
+const express = require('express');
+const logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const compress = require('compression');
+const methodOverride = require('method-override');
+const cors = require('cors');
+const httpStatus = require('http-status');
+const expressWinston = require('express-winston');
+const expressValidation = require('express-validation');
+const helmet = require('helmet');
+const winstonInstance = require('./winston');
+const manageRoutes = require('../route/base/manage.route');
+const config = require('./config');
+const ApiError = require('../error/api.error');
 
 const app = express();
 
@@ -32,67 +32,70 @@ if (config.env === config.environments.development) {
     expressWinston.responseWhitelist.push('body');
     app.use(expressWinston.logger({
         winstonInstance,
-        meta: true, 
+        meta: true,
         msg: 'HTTP {{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms',
         colorize: true
     }));
 }
 
-app.use((err, req, res, next) => {
-    if (!(err instanceof ApiError)) {
-        winstonInstance.error(err);
-        
-        let code = 'ERROR_CODE';
-        
-        if (err.name === 'UnauthorizedError') {
-            code = 'AUTH_ERROR_' + err.code.toUpperCase().split(' ').join('_');
-        
-        } else if (err.code) {
-            code = err.code.toUpperCase().split(' ').join('_');
-        }
+app.setupApp = (appPackage) => {
 
-        const apiError = new ApiError(err.message, code, err.status, err.isPublic);
-        return next(apiError);
+    app.use('/manage', manageRoutes.setupManageRoutes(appPackage));
+
+    app.use((err, req, res, next) => {
+        if (!(err instanceof ApiError)) {
+            winstonInstance.error(err);
+    
+            let code = 'ERROR_CODE';
+    
+            if (err.name === 'UnauthorizedError') {
+                code = 'AUTH_ERROR_' + err.code.toUpperCase().split(' ').join('_');
+    
+            } else if (err.code) {
+                code = err.code.toUpperCase().split(' ').join('_');
+            }
+    
+            const apiError = new ApiError(err.message, code, err.status, err.isPublic);
+            return next(apiError);
+        }
+    
+        return next(err);
+    });
+    
+    app.use((req, res, next) => {
+        const err = new ApiError('API not found', 'API_NOT_FOUND', httpStatus.NOT_FOUND);
+        return next(err);
+    });
+    
+    if (config.env !== config.environments.test) {
+        app.use(expressWinston.errorLogger({
+            winstonInstance,
+        }));
     }
     
-    return next(err);
-});
-
-app.use((req, res, next) => {
-    const err = new ApiError('API not found', 'API_NOT_FOUND', httpStatus.NOT_FOUND);
-    return next(err);
-});
-
-if (config.env !== config.environments.test) {
-    app.use(expressWinston.errorLogger({
-        winstonInstance,
-    }));
-}
-
-app.use(( err, req, res, next, ) => {
-    if (err instanceof expressValidation.ValidationError) {
-        const errors = err.details.body
-            .map(error => {
-                return { 
-                    code: 'VALIDATION_ERROR_' + error.context.key.toUpperCase(), 
-                    message: error.message,
-                    stack: config.env === config.environments.development ? error.type : {}
-                } 
+    app.use((err, req, res, next) => {
+        if (err instanceof expressValidation.ValidationError) {
+            const errors = err.details.body
+                .map(error => {
+                    return {
+                        code: 'VALIDATION_ERROR_' + error.context.key.toUpperCase(),
+                        message: error.message,
+                        stack: config.env === config.environments.development ? error.type : {}
+                    }
+                });
+    
+            res.status(err.status).json({ errors });
+    
+        } else {
+            res.status(err.status).json({
+                errors: [{
+                    code: err.code,
+                    message: err.isPublic ? err.message : httpStatus[err.status],
+                    stack: config.env === config.environments.development ? err.stack : {}
+                }]
             });
+        }
+    });
+};
 
-        res.status(err.status).json({ errors });
-
-    } else {
-        res.status(err.status).json({
-            errors: [{
-                code: err.code,
-                message: err.isPublic ? err.message : httpStatus[err.status],
-                stack: config.env === config.environments.development ? err.stack : {}
-            }]
-        });
-    } 
-});
-
-app.use('/manage', manageRoutes);
-
-export default app;
+module.exports = app;

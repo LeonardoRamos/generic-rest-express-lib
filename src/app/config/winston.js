@@ -1,5 +1,5 @@
-import winston from 'winston';
-import config from './config';
+const winston = require('winston');
+const config = require('./config');
 
 let loggerConfig = {
     format: winston.format.combine(
@@ -27,4 +27,4 @@ if (config.env === config.environments.production) {
 
 const logger = winston.createLogger(loggerConfig);
 
-export default logger;
+module.exports = logger;

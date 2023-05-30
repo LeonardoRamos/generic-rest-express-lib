@@ -1,16 +1,18 @@
-import LogicOperator from '../../domain/core/filter/logic.operator.enum';
-import FilterOperator from '../../domain/core/filter/filter.operator.enum';
-import SortOrder from '../../domain/core/filter/sort.order.enum';
+const LogicOperator = require('../../domain/core/filter/logic.operator.enum');
+const FilterOperator = require('../../domain/core/filter/filter.operator.enum');
+const SortOrder = require('../../domain/core/filter/sort.order.enum');
 
 const DEFAULT_OFFSET = 0;
 const DEFAULT_LIMIT = 20;
 const MAX_LIMIT = 100;
 
 function hasValidAggregateFunction(requestQuery) {
-    return (requestQuery.sum !== null && requestQuery.sum !== undefined && '' !== requestQuery.sum) || 
-            (requestQuery.avg !== null && requestQuery.avg !== undefined && '' !== requestQuery.avg) || 
-            (requestQuery.count !== null && requestQuery.count !== undefined && '' !== requestQuery.count) ||
-            (requestQuery.countDistinct !== null && requestQuery.countDistinct !== undefined && '' !== requestQuery.countDistinct);
+    return (
+        (requestQuery.sum !== null && requestQuery.sum !== undefined && '' !== requestQuery.sum) ||
+        (requestQuery.avg !== null && requestQuery.avg !== undefined && '' !== requestQuery.avg) ||
+        (requestQuery.count !== null && requestQuery.count !== undefined && '' !== requestQuery.count) ||
+        (requestQuery.countDistinct !== null && requestQuery.countDistinct !== undefined && '' !== requestQuery.countDistinct)
+    );
 }
 
 function getOffset(requestQuery) {
@@ -25,12 +27,11 @@ function getLimit(requestQuery) {
     let limit = requestQuery.limit;
     if (limit === undefined || limit === null) {
         limit = DEFAULT_LIMIT;
-    
     } else if (limit > MAX_LIMIT) {
         limit = MAX_LIMIT;
     }
 
-    return limit
+    return limit;
 }
 
 function parseSeletor(seletor) {
@@ -38,7 +39,7 @@ function parseSeletor(seletor) {
         return [];
     }
 
-    return seletor.split(',').map(attr => attr.trim());
+    return seletor.split(',').map((attr) => attr.trim());
 }
 
 function parseSortOrder(sort) {
@@ -47,13 +48,13 @@ function parseSortOrder(sort) {
     }
 
     let orderFields = [];
-    let fields = sort.split(',').map(attr => attr.trim());
+    let fields = sort.split(',').map((attr) => attr.trim());
 
     for (const field of fields) {
         let filterOrder = field.split('=');
         orderFields.push({
             field: filterOrder[0].trim(),
-            sortOrder: SortOrder.getSortOrder(filterOrder[1].trim())
+            sortOrder: SortOrder.getSortOrder(filterOrder[1].trim()),
         });
     }
 
@@ -83,21 +84,21 @@ function normalizeSymbol(requestQuery, symbol) {
     if (requestQuery[symbol]) {
         requestQuery[symbol] = requestQuery[symbol].split('[').join('').split(']').join('');
     }
-    
+
     return requestQuery;
 }
 
 function parseFilterOperators(filter) {
     let simpleCharOperator = [ FilterOperator.EQ, FilterOperator.GT, FilterOperator.LT ];
-    
-    Object.keys(FilterOperator).forEach(filterOperator => {
+
+    Object.keys(FilterOperator).forEach((filterOperator) => {
         if (!simpleCharOperator.includes(FilterOperator[filterOperator])) {
             filter = filter.split(FilterOperator[filterOperator].operatorCommonAlias).join(FilterOperator[filterOperator].parseableOperator);
             filter = filter.split(FilterOperator[filterOperator].operatorAlias).join(FilterOperator[filterOperator].parseableOperator);
         }
     });
 
-    simpleCharOperator.forEach(simpleCharfilterOperator => {
+    simpleCharOperator.forEach((simpleCharfilterOperator) => {
         filter = filter.split(simpleCharfilterOperator.operatorCommonAlias).join(simpleCharfilterOperator.parseableOperator);
         filter = filter.split(simpleCharfilterOperator.operatorAlias).join(simpleCharfilterOperator.parseableOperator);
     });
@@ -107,11 +108,11 @@ function parseFilterOperators(filter) {
 
 function parseFilterExpressions(expressionString) {
     let currentExpression = {};
-    
+
     if (expressionString === null) {
         return currentExpression;
     }
-    
+
     let initialExpression = currentExpression;
 
     if (expressionString) {
@@ -119,88 +120,81 @@ function parseFilterExpressions(expressionString) {
         let i = 0;
 
         while (i < expressionString.length) {
-        
             if (expressionString.charAt(i) !== '_') {
                 word += expressionString.charAt(i);
-                
             } else {
                 let logicOperator = processOperator(expressionString, i);
-    
+
                 if (logicOperator !== null) {
                     currentExpression.logicOperator = logicOperator;
                     currentExpression.filterField = parseFilterField(word.trim());
                     currentExpression = processNewExpressionNode(currentExpression);
-                    
+
                     i += logicOperator.operator.length - 1;
                     word = '';
-                
                 } else {
                     word += expressionString.charAt(i);
                 }
             }
-    
+
             i++;
         }
     }
-    
+
     currentExpression.filterField = parseFilterField(word.trim());
     processNewExpressionNode(currentExpression);
-    
+
     return initialExpression;
 }
 
 function parseFilterField(logicExpression) {
     let filterField = {};
-    
+
     if (logicExpression === null || '' === logicExpression) {
         return null;
     }
-    
+
     let word = '';
     let i = 0;
 
     while (i < logicExpression.length) {
-      
         if (logicExpression.charAt(i) !== '|') {
             word += logicExpression.charAt(i);
-        
         } else {
             let filterOperator = getComparisonOperator(logicExpression, i);
-            
+
             filterField.field = word.trim();
             filterField.filterOperator = filterOperator;
-            
+
             i += filterOperator.parseableOperator.length - 1;
             word = '';
         }
 
         i++;
     }
-    
+
     filterField.value = word.trim();
-    
+
     return filterField;
 }
 
 function getComparisonOperator(logicExpression, index) {
     let operation = '';
-    let appendOperation = true; 
-    
+    let appendOperation = true;
+
     do {
         operation += logicExpression.charAt(index);
         index++;
-        
+
         if (index >= logicExpression.length || logicExpression.charAt(index) === '|') {
-            
             appendOperation = false;
-            
+
             if (index < logicExpression.length && logicExpression.charAt(index) === '|') {
                 operation += logicExpression.charAt(index);
             }
         }
-        
     } while (appendOperation);
-    
+
     return FilterOperator.getFilterOperator(operation.trim());
 }
 
@@ -209,38 +203,36 @@ function processNewExpressionNode(currentExpression) {
         currentExpression.filterExpression = {};
         currentExpression = currentExpression.filterExpression;
     }
-    
+
     return currentExpression;
 }
 
 function processOperator(expressionString, index) {
     let logicOperatorText = '';
     let appendOperation = true;
-    
+
     do {
         logicOperatorText += expressionString.charAt(index);
         index++;
-        
+
         if (index >= expressionString.length || expressionString.charAt(index) === '_') {
-            
             appendOperation = false;
-            
+
             if (index < expressionString.length && expressionString.charAt(index) === '_') {
                 logicOperatorText += expressionString.charAt(index);
             }
         }
-        
     } while (appendOperation);
-    
+
     return LogicOperator.getLogicOperator(logicOperatorText.trim());
 }
 
-export default { 
-    hasValidAggregateFunction, 
-    getLimit, 
-    getOffset, 
-    parseSeletor, 
-    parseSortOrder, 
-    parseSymbols, 
-    parseFilterExpressions 
+module.exports = {
+    hasValidAggregateFunction,
+    getLimit,
+    getOffset,
+    parseSeletor,
+    parseSortOrder,
+    parseSymbols,
+    parseFilterExpressions,
 };

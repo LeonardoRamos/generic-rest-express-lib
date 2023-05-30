@@ -1,7 +1,7 @@
-import { Joi } from 'express-validation';
-import httpStatus from 'http-status';
-import Sequelize from 'sequelize';
-import ApiError from '../../error/api.error';
+const { Joi } = require('express-validation');
+const httpStatus = require('http-status');
+const Sequelize = require('sequelize');
+const ApiError = require('../../error/api.error');
 
 module.exports = class ApiRestController {
     
@@ -104,4 +104,4 @@ module.exports = class ApiRestController {
         };
     }
 
-}
+};

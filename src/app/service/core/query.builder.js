@@ -1,12 +1,12 @@
-import LogicOperator from '../../domain/core/filter/logic.operator.enum';
-import AggregateFunction from '../../domain/core/filter/aggregate.function.enum';
-import FilterOperator from '../../domain/core/filter/filter.operator.enum';
-import requestParser from './request.parser';
-import Sequelize from 'sequelize';
-import _ from 'lodash';
+const LogicOperator = require('../../domain/core/filter/logic.operator.enum');
+const AggregateFunction = require('../../domain/core/filter/aggregate.function.enum');
+const FilterOperator = require('../../domain/core/filter/filter.operator.enum');
+const requestParser = require('./request.parser');
+const Sequelize = require('sequelize');
+const _ = require('lodash');
 
 const Op = Sequelize.Op;
-const ROOT_MODEL = '_.'; 
+const ROOT_MODEL = '_.';
 
 function buildQuery(model, requestQuery) {
     requestQuery = requestParser.parseSymbols(requestQuery);
@@ -479,4 +479,5 @@ function getSignificantField(field) {
     return fields[fields.length - 1];
 }
 
-export default { buildQuery };
+
+module.exports = { buildQuery };

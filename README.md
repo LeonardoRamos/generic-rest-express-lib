@@ -15,13 +15,45 @@ Import the dependency on your project. POC example https://github.com/LeonardoRa
         .
 ```
 
+Create a config file for setting up database with root base path of your application so sequelize can setup your domain models from domain's path:
+
+```javascript
+import { db } from 'generic-rest-express-lib';
+import path from 'path';
+
+db.loadModels(__dirname).forEach((modelFile) => {
+    console.info(`importing model file ${modelFile}`);
+    const model = db.sequelize.import(modelFile);
+    db[model.name] = model;
+});
+
+db.syncModels();
+
+export default db;
+```  
+
+Define your applications routes (note, if you use your application package.json information, a `/manage/info` route will be added):
+
+```javascript
+import appPackage from '../../../package.json';
+import authRoute from '../route/auth.route';
+import apiRoutes from '../route/api/api.route';
+import { app } from 'generic-rest-express-lib';
+
+app.use('/auth', authRoute);
+app.use('/v1', apiRoutes);
+
+app.setupApp(appPackage);
+
+export default app;
+``` 
+
 #### Creating API entities (entities with the following mandatory fields: id; externalId; insertDate; updateDate; deleteDate; active)
 
 - #### Entity layer
 
 ```javascript
-import Sequelize from 'sequelize';
-import { BaseEntity } from 'generic-rest-express-lib';
+import { BaseEntity, db } from 'generic-rest-express-lib';
 
 class UserDefinition extends BaseEntity { 
     .
@@ -98,6 +130,23 @@ router
 router.param('externalId', userController.getByExternalId);
 
 export default router;
+```
+
+Example of env vars:
+
+```
+NODE_ENV=development
+PORT=9503
+JWT_SECRET=0a6b944d-d2fb-46fc-a85e-0295c986cd9f
+JWT_EXPIRATION=86000
+DB_DATABASE=TestNode
+DB_DIALECT=dialect
+DB_PORT=5432
+DB_HOST=localhost
+DB_USER=postgres
+DB_PASSWORD=postgres
+SCAN_MODEL_PATH=/domain
+LOG_FILE=/var/log/node/GenericRestExpressLib/genericRestExpressLib.log
 ```
 
 ## API

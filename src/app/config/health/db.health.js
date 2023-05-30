@@ -1,5 +1,5 @@
-import { sequelize } from '../sequelize';
-import winstonInstance from '../winston';
+const { sequelize } = require('../sequelize');
+const winstonInstance = require('../winston');
 
 async function doHealthCheck() {
     let dbHealth = {
@@ -30,4 +30,4 @@ function mapDialectToProduct(dialect) {
     else return 'unknown';
 }
 
-export default { doHealthCheck };
+module.exports = { doHealthCheck };

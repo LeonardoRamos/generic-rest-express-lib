@@ -1,25 +1,20 @@
-import '@babel/polyfill';
-
-import config from './config/config';
-import app from './config/express';
-import db from './config/sequelize';
-import logger from './config/winston';
-import ApiError from './error/api.error';
-import BaseEntity from './domain/core/base.entity';
-import ApiRestController from './controller/core/ApiRestController';
-import ApiService from './service/core/api.rest.service';
-
+const config = require('./config/config');
+const app = require('./config/express');
+const db = require('./config/sequelize');
+const logger = require('./config/winston');
+const ApiError = require('./error/api.error');
+const BaseEntity = require('./domain/core/base.entity');
+const ApiRestService = require('./service/core/api.rest.service');
+const ApiRestController = require('./controller/core/api.rest.controller');
 Promise = require('bluebird'); 
 
-global.__basedir = __dirname;
-
-export default {
+module.exports = {
     config,
     app,
     db,
     logger,
     ApiError,
     BaseEntity,
-    ApiService, 
-    ApiRestController 
+    ApiRestService,
+    ApiRestController
 };

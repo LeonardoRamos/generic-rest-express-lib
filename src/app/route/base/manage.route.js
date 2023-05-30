@@ -1,27 +1,35 @@
-import express from 'express';
-import appPackage from '../../../../package.json';
-import dbHealth from '../../config/health/db.health'
+const express = require('express');
+const dbHealth = require('../../config/health/db.health');
 
-const router = express.Router(); 
+const manageRoutes = {};
 
-router.get('/health', async (req, res) => {
-    let status = 'UP';
-    
-    let db = await dbHealth.doHealthCheck();
-    status = db.status === 'UP' ? status : 'DOWN'
+manageRoutes.setupManageRoutes = (appPackage) => {
+	const router = express.Router();
 
-    res.send({
-        status,
-        components: { db }
-    });
-});
+	router.get('/health', async (req, res) => {
+		let status = 'UP';
 
-router.get('/info', (req, res) => {
-    res.send({
-        name: appPackage.name,
-        description: appPackage.description,
-        version: appPackage.version
-    })
-});
+		let db = await dbHealth.doHealthCheck();
+		status = db.status === 'UP' ? status : 'DOWN';
 
-export default router;
+		res.send({
+			status,
+			components: { db },
+		});
+	});
+
+	if (appPackage) {
+		router.get('/info', (req, res) => {
+			res.send({
+				name: appPackage.name,
+				description: appPackage.description,
+				version: appPackage.version,
+			});
+		});
+	}
+
+	return router;
+};
+
+
+module.exports = manageRoutes;

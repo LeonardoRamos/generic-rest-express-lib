@@ -1,4 +1,4 @@
-const { sequelize }= require('../sequelize');
+const { sequelize } = require('../sequelize');
 const winstonInstance = require('../winston');
 
 async function doHealthCheck() {

@@ -1,9 +1,7 @@
 const express = require('express');
 const dbHealth = require('../../config/health/db.health');
 
-const manageRoutes = {};
-
-manageRoutes.setupManageRoutes = (appPackage) => {
+function setupManageRoutes(appPackage) {
 	const router = express.Router();
 
 	router.get('/health', async (req, res) => {
@@ -29,7 +27,6 @@ manageRoutes.setupManageRoutes = (appPackage) => {
 	}
 
 	return router;
-};
+}
 
-
-module.exports = manageRoutes;
+module.exports = { setupManageRoutes };

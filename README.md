@@ -31,7 +31,7 @@ db.syncModels();
 export default db;
 ```  
 
-Define your applications routes (note, a health check endpoint will be added on `/manage/health` and if you use your application package.json information as parameter on setup, a `/manage/info` route will be added):
+Define your applications routes (note, a health check endpoint will be added on `/manage/health` and if you use your application package.json information as parameter on setup, a `/manage/info` route will also be added):
 
 ```javascript
 import appPackage from '../../../package.json';

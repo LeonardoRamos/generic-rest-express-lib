@@ -52,9 +52,9 @@ export default app;
 - #### Entity layer
 
 ```javascript
-import { BaseEntity, db } from 'generic-rest-express-lib';
+import { BaseApiEntity, db } from 'generic-rest-express-lib';
 
-class UserDefinition extends BaseEntity { 
+class UserDefinition extends BaseApiEntity { 
     .
     .
     .
@@ -63,6 +63,10 @@ class UserDefinition extends BaseEntity {
 const userDefinition = new UserDefinition();
 
 module.exports = (sequelize) => {
+    const User = sequelize.define('User', userDefinition, {
+        tableName: 'user',
+        timestamps: false
+    });
     .
     .
     .
@@ -70,6 +74,37 @@ module.exports = (sequelize) => {
     User.prototype.toJSON = userDefinition.toJSON;
 
     return User;
+};
+
+```
+
+#### Creating Basic entities (entities with field primary key ID)
+
+- #### Entity layer
+
+```javascript
+import { BaseEntity, db } from 'generic-rest-express-lib';
+
+class CarDefinition extends BaseEntity { 
+    .
+    .
+    .
+}
+
+const carDefinition = new CarDefinition();
+
+module.exports = (sequelize) => {
+    const Car = sequelize.define('Car', carDefinition, {
+        tableName: 'car',
+        timestamps: false
+    });
+    .
+    .
+    .
+
+    Car.prototype.toJSON = carDefinition.toJSON;
+
+    return Car;
 };
 
 ```

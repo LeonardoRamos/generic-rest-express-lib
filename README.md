@@ -55,6 +55,8 @@ export default app;
 import { BaseApiEntity, db } from 'generic-rest-express-lib';
 
 class UserDefinition extends BaseApiEntity { 
+    constructor() {
+        super();
     .
     .
     .
@@ -86,6 +88,8 @@ module.exports = (sequelize) => {
 import { BaseEntity, db } from 'generic-rest-express-lib';
 
 class CarDefinition extends BaseEntity { 
+    constructor() {
+        super();
     .
     .
     .

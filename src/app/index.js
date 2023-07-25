@@ -6,6 +6,8 @@ const ApiError = require('./error/api.error');
 const BaseEntity = require('./domain/core/base.entity');
 const BaseApiEntity = require('./domain/core/base.api.entity');
 const ApiRestService = require('./service/core/api.rest.service');
+const BaseApiRestService = require('./service/core/base.api.rest.service');
+const BaseRestService = require('./service/core/base.rest.service');
 const ApiRestController = require('./controller/core/api.rest.controller');
 require('bluebird'); 
 
@@ -18,5 +20,7 @@ module.exports = {
     BaseEntity,
     BaseApiEntity,
     ApiRestService,
+    BaseApiRestService,
+    BaseRestService,
     ApiRestController
 };

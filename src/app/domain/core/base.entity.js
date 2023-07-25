@@ -1,6 +1,7 @@
 const Sequelize = require('sequelize');
 
 class BaseEntity {
+	
 	constructor() {
 		this.id = {
 	  		type: Sequelize.INTEGER,

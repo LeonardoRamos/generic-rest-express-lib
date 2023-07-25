@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const BaseEntity = require('./base.entity');
 
 class BaseApiEntity extends BaseEntity {
+	
 	constructor() {
 		super();
 

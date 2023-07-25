@@ -80,6 +80,63 @@ module.exports = (sequelize) => {
 
 ```
 
+- #### Service layer
+
+```javascript
+import { BaseApiRestService } from 'generic-rest-express-lib';
+import db from '../config/sequelize';
+
+const User = db.User;
+
+module.exports = class UserService extends BaseApiRestService {
+    
+    constructor() {
+        super(User);
+    }
+}
+```
+
+- #### Controller layer
+
+```javascript
+import { BaseApiRestController } from 'generic-rest-express-lib';
+import UserService from '../service/user.service';
+
+const userService = new UserService();
+
+module.exports = class UserController extends BaseApiRestController {
+    
+    constructor() {
+        super(userService);
+    }
+}
+```
+
+- #### Route layer
+
+```javascript
+import express from 'express';
+import UserController from '../controller/user.controller';
+
+const router = express.Router();
+const userController = new UserController();
+
+router
+    .route('/users')
+    .get(userController.list)
+    .post(userController.insert);
+
+router
+    .route('/users/:externalId')
+    .get(userController.get)
+    .put(userController.update)
+    .delete(userController.remove);
+
+router.param('externalId', userController.getByExternalId);
+
+export default router;
+```
+
 #### Creating Basic entities (entities with field primary key ID)
 
 - #### Entity layer
@@ -116,15 +173,15 @@ module.exports = (sequelize) => {
 - #### Service layer
 
 ```javascript
-import { ApiRestService } from 'generic-rest-express-lib';
+import { BaseRestService } from 'generic-rest-express-lib';
 import db from '../config/sequelize';
 
-const User = db.User;
+const Car = db.Car;
 
-module.exports = class UserService extends ApiRestService {
+module.exports = class CarService extends BaseRestService {
     
     constructor() {
-        super(User);
+        super(Car);
     }
 }
 ```
@@ -132,15 +189,15 @@ module.exports = class UserService extends ApiRestService {
 - #### Controller layer
 
 ```javascript
-import { ApiRestController } from 'generic-rest-express-lib';
-import UserService from '../service/user.service';
+import { BaseRestController } from 'generic-rest-express-lib';
+import CarService from '../service/car.service';
 
-const userService = new UserService();
+const carService = new CarService();
 
-module.exports = class UserController extends ApiRestController {
+module.exports = class CarController extends BaseRestController {
     
     constructor() {
-        super(userService);
+        super(carService);
     }
 }
 ```
@@ -149,23 +206,23 @@ module.exports = class UserController extends ApiRestController {
 
 ```javascript
 import express from 'express';
-import UserController from '../controller/user.controller';
+import CarController from '../controller/car.controller';
 
 const router = express.Router();
-const userController = new UserController();
+const carController = new CarController();
 
 router
-    .route('/users')
-    .get(userController.list)
-    .post(userController.insert);
+    .route('/cars')
+    .get(carController.list)
+    .post(carController.insert);
 
 router
-    .route('/users/:externalId')
-    .get(userController.get)
-    .put(userController.update)
-    .delete(userController.remove);
+    .route('/users/:id')
+    .get(carController.get)
+    .put(carController.update)
+    .delete(carController.remove);
 
-router.param('externalId', userController.getByExternalId);
+router.param('id', carController.getById);
 
 export default router;
 ```
